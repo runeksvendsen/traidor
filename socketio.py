@@ -152,7 +152,7 @@ class SocketIO:
    def unsubscribe(S, channel_id):
       S.ws.send('4::/mtgox:{"op":"unsubscribe","channel":"%s"}' % channel_id)
          
-def test_callback(S, msg):
+def test_callback(msg):
    global sio
    import ast
    print 'msg: ', msg
@@ -164,7 +164,7 @@ def test_callback(S, msg):
          sio.unsubscribe(msg_dict['channel'])
 
 # testcase
-if False:
+if True:
    sio = SocketIO('socketio.mtgox.com/socket.io', test_callback, True)
    sio.connect()
    #time.sleep(
