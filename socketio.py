@@ -164,7 +164,7 @@ def test_callback(msg):
          sio.unsubscribe(msg_dict['channel'])
 
 # testcase
-if True:
+if False:
    sio = SocketIO('socketio.mtgox.com/socket.io', test_callback, True)
    sio.connect()
    #time.sleep(
