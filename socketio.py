@@ -91,7 +91,7 @@ class SocketIO:
       msg = S.ws.recv()
       while msg is not None and S.run:
          if msg[:10] == "4::/mtgox:":
-            S.callback(S, msg[10:])
+            S.callback(msg[10:])
          try:
             msg = S.ws.recv()
          except:
@@ -153,6 +153,7 @@ class SocketIO:
       S.ws.send('4::/mtgox:{"op":"unsubscribe","channel":"%s"}' % channel_id)
          
 def test_callback(S, msg):
+   global sio
    import ast
    print 'msg: ', msg
    #convert received message string into dictionary
@@ -160,7 +161,7 @@ def test_callback(S, msg):
    #print msg_dict
    if msg_dict['op'] == 'subscribe':
       if msg_dict['channel'] == 'd5f06780-30a8-4a48-a2f8-7ed181b4a13f' or msg_dict['channel'] == '24e67e0d-1cad-4cc0-9e7a-f8523ef460fe':
-         S.unsubscribe(msg_dict['channel'])
+         sio.unsubscribe(msg_dict['channel'])
 
 # testcase
 if False:
