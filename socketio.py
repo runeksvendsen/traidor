@@ -108,12 +108,17 @@ class SocketIO:
             #  so it's ok if we've create a new one by calling S.connect() above
             S._debug(thread_ident + 'about to raise exception...')
             raise
+            #DEBUG
+            print "ERROR!: this message shouldn't be printed! (after raise in a thread)"
       else:
          if (S.run == False and S.reconnect == True):
             #this means the keepalive thread function caught an exception, set S.run to False and closed the connection. we should reconnect and exit this thread
             print thread_ident, 'trying reconnect...'
             S.connect()
             raise SystemExit
+            #DEBUG
+            print "ERROR!: this message shouldn't be printed! (after raise in a thread)"
+
          if (msg is None and S.run == True):
             print thread_ident, "recv() returned empty message. connection is broken. let's try to close this connection and reconnect, and then exit this thread."
             S.run = False
@@ -121,6 +126,8 @@ class SocketIO:
             print thread_ident, '\ttrying reconnect...'
             S.connect()
             raise SystemExit
+            #DEBUG
+            print "ERROR!: this message shouldn't be printed! (after raise in a thread)"
          
    def keepalive_func(S):
       thread_ident = current_thread().name + ":"
