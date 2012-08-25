@@ -6,6 +6,8 @@ import time
 from websocket_client import create_connection
 import traceback
 
+class ConnectionError(Exception): pass
+
 class SocketIO:
    def __init__(S, url, callback, debug=False):
       S.url = url
@@ -27,7 +29,11 @@ class SocketIO:
       
    def connect(S):
       data = urllib.urlencode({})
+      #handle if URL contains a '?' (in case of ?currency=XXX is appended)
+      #if S.url.find('?') == -1:
       url = 'https://' + S.url + "/1"
+      #else:
+      #   url = 'https://' + S.url[0:S.url.find('?')] + "/1" + S.url[-(len(S.url)-S.url.find('?')):]
       req = urllib2.Request(url, data)
       S._debug(url)
       S._debug("resolving URL...")
@@ -47,8 +53,18 @@ class SocketIO:
             time.sleep(10)
             
       S._debug("retrieving URL content...")
-      r = response.read().split(':')
-      S.heartbeat_interval = int(r[1])
+      tmp = response.read()
+      #print tmp
+      r = tmp.split(':')
+      #print r
+      try:
+         S.heartbeat_interval = int(r[1])
+      except IndexError:
+         print "ERROR: Invalid response received from server!"
+         print "\tRaw response: \"" + tmp + "\""
+         response.close()
+         raise ConnectionError
+                  
       S._debug('heartbeat:' + str(S.heartbeat_interval))
       if 'websocket' in r[3].split(','):
          S._debug("good: transport 'websocket' supported by socket.io server " + S.url)
@@ -72,7 +88,12 @@ class SocketIO:
       S._debug(thread_ident + "this is thread_func")
       S._debug('SocketIO: websocket thread started')
       
-      my_url = 'wss://' + S.url + "/1/websocket/" + S.id
+      #handle if URL contains a '?' (in case of ?currency=XXX is appended)
+      if S.url.find('?') == -1:
+         my_url = 'wss://' + S.url + "/1/websocket/" + S.id
+      else:
+         my_url = 'wss://' + S.url[0:S.url.find('?')] + "/1/websocket/" + S.id + S.url[-(len(S.url)-S.url.find('?')):]
+      
       S._debug("connecting websocket...")
       S.ws = create_connection(my_url)
       S._debug("connected!")
